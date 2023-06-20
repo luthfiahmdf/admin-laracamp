@@ -6,11 +6,12 @@ function ButtonComponents({ text, onClick, className, icons }) {
     onClick: PropTypes.func.isRequired,
     className: PropTypes.string,
     icons: PropTypes.string,
+    id: PropTypes.integer,
   };
   return (
     <div>
       <button
-        className={`${className} lg:w-32 rounded-md p-2 flex flex-wrap justify-center items-center gap-2`}
+        className={`${className} lg:w-28 rounded-md p-2 flex flex-wrap justify-center items-center gap-2`}
         onClick={onClick}
       >
         {icons} {text}
