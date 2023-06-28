@@ -5,10 +5,10 @@ import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 const EditCamp = () => {
-  const { id } = useParams();
   const { title } = useParams();
   const { slug } = useParams();
   const { price } = useParams();
+  const { camp_id } = useParams();
   const navigate = useNavigate();
   const initialValues = {
     title: `${title}`,
@@ -18,30 +18,26 @@ const EditCamp = () => {
   const onFinish = async (values) => {
     const transformedValues = {
       ...values,
+      camp_id: parseInt(camp_id),
       price: parseInt(values.price),
     };
     try {
-      const post = await axios.patch(
-        "http://127.0.0.1:8000/api/camp",
-        transformedValues
-      );
+      await axios.patch("http://127.0.0.1:8000/api/camp", transformedValues);
       Swal.fire({
         icon: "success",
         title: "Good job!",
-        text: "Add Camp!",
-        showCancelButton: true,
+        text: "Edit Camp Succesfuly!",
+        showCancelButton: false,
         confirmButtonText: "OK",
       }).then((result) => {
         if (result.isConfirmed) {
-          window.location.reload();
+          navigate("/");
         }
       });
-
-      return post.data.data;
     } catch (error) {
       console.log(error);
     }
-    console.log("Success:", transformedValues);
+    console.log("data:", transformedValues);
   };
   return (
     <div className="slice bg-slate-600 w-full h-screen flex justify-center ">

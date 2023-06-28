@@ -1,8 +1,6 @@
-import { PieChartOutlined } from "@ant-design/icons";
-
 import { Breadcrumb, Layout, Menu, theme } from "antd";
 import { useState } from "react";
-import { FaBook } from "react-icons/fa";
+
 import CampList from "./camp/camp_list";
 import CampBenefit from "./camp/camp_benefit";
 
@@ -81,9 +79,7 @@ const App = () => {
             {renderContent()}
           </div>
         </Content>
-        <Footer style={{ textAlign: "center" }}>
-          Ant Design ©2023 Created by Ant UED
-        </Footer>
+        <Footer style={{ textAlign: "center" }}>❤️</Footer>
       </Layout>
     </Layout>
   );

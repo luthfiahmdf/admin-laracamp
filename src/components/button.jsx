@@ -1,4 +1,3 @@
-import { FaPen } from "react-icons/fa";
 import PropTypes from "prop-types";
 function ButtonComponents({ text, onClick, className, icons }) {
   ButtonComponents.propTypes = {
@@ -6,7 +5,6 @@ function ButtonComponents({ text, onClick, className, icons }) {
     onClick: PropTypes.func.isRequired,
     className: PropTypes.string,
     icons: PropTypes.string,
-    id: PropTypes.integer,
   };
   return (
     <div>

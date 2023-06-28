@@ -1,4 +1,4 @@
-import { Space, Table, Modal, Button, Form, Input } from "antd";
+import { Space, Table, Modal, Form, Input, Spin } from "antd";
 import { FaPen, FaTrash, FaPlus } from "react-icons/fa";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
@@ -8,26 +8,24 @@ import axios from "axios";
 const CampList = () => {
   const navigate = useNavigate();
   const [camp, setCamp] = useState([]);
+  const [loading, setLoading] = useState(false);
+
   const getData = async () => {
     try {
+      setLoading(true); // Set loading to true before making the API request
       const res = await axios.get("http://127.0.0.1:8000/api/camps");
       setCamp(res.data.data);
       console.log(res.data.data);
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false); // Set loading back to false after the API request is complete
     }
   };
+
   useEffect(() => {
     getData();
   }, []);
-
-  const handleDelete = async (camp_id) => {
-    try {
-      await axios.delete("http://127.0.0.1:8000/api/camp", camp_id);
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const rupiah = (number) => {
     return new Intl.NumberFormat("id-ID", {
@@ -35,8 +33,9 @@ const CampList = () => {
       currency: "IDR",
     }).format(number);
   };
-  const data = camp.map((item) => ({
-    key: `${item.id}`,
+  const data = camp.map((item, index) => ({
+    key: index + 1,
+    camp_id: `${item.id}`,
     title: `${item.title}`,
     price: `${rupiah(item.price * 1000)}`,
     action: (
@@ -45,7 +44,7 @@ const CampList = () => {
           text="Edit"
           onClick={() =>
             navigate(
-              `/edit/${item.id}/${item.title}/${item.slug}/${item.price}`
+              `/edit/${item.id}/${item.title}/${item.slug}/${item.price}/${item.id}`
             )
           }
           icons={<FaPen />}
@@ -56,7 +55,40 @@ const CampList = () => {
           text="Delete"
           icons={<FaTrash />}
           className="text-white bg-rose-700"
-          onClick={handleDelete}
+          onClick={async () => {
+            try {
+              await axios.delete("http://127.0.0.1:8000/api/camp", {
+                data: {
+                  camp_id: `${item.id}`,
+                },
+              });
+              Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!",
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  setTimeout(() => {
+                    Swal.fire(
+                      "Deleted!",
+                      "Your file has been deleted.",
+                      "success"
+                    );
+                    // Refresh halaman
+                    location.reload();
+                  }, 1500); // Penundaan 1 detik sebelum merefresh halaman
+                }
+              });
+
+              // console.log(`${item.id}`);
+            } catch (error) {
+              console.log(error);
+            }
+          }}
         />
       </div>
     ),
@@ -132,7 +164,12 @@ const CampList = () => {
 
   return (
     <>
-      <Modal title="Add Camp" open={isModalOpen} onCancel={handleCancel}>
+      <Modal
+        title="Add Camp"
+        open={isModalOpen}
+        onCancel={handleCancel}
+        footer={null}
+      >
         <Form
           name="basic"
           labelCol={{
@@ -216,7 +253,14 @@ const CampList = () => {
             <Button onClick={clearFilters}>Clear filters</Button>
             <Button onClick={clearAll}>Clear filters and sorters</Button> */}
       </Space>
-      <Table columns={columns} dataSource={data} />
+
+      {loading ? (
+        <div className="loading flex justify-center items-center p-9">
+          <Spin size="large" />
+        </div>
+      ) : (
+        <Table columns={columns} dataSource={data} />
+      )}
     </>
   );
 };
